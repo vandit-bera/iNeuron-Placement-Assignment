@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Blog Web App</title>
+</head>
+<style>
+    form{
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    input, textarea{
+        padding: 8px 5px;
+    }
+
+    button{
+        background-color: #917d67;
+        font-size: larger;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    ul{
+        margin-top: 80px;
+    }
+</style>
+<body>
+  <h1  align="center">Blog Web App</h1>
+  
+  <form id="addBlogForm" align="center">
+    <input type="text" id="titleInput" placeholder="Enter title" required>
+    <textarea id="bodyInput" placeholder="Enter blog content" required></textarea>
+    <button type="submit">Add Blog</button>
+  </form>
+
+  <h3>--> Your blog add at the last of the list please check it out...</h3>
+  
+  <ul id="blogList"></ul>
+  
+  <script>
+    const apiUrl = 'https://jsonplaceholder.typicode.com/posts';
+const blogList = document.getElementById('blogList');
+const addBlogForm = document.getElementById('addBlogForm');
+const titleInput = document.getElementById('titleInput');
+const bodyInput = document.getElementById('bodyInput');
+
+// Fetch blogs from API and display them
+function fetchBlogs() {
+  fetch(apiUrl)
+    .then(response => response.json())
+    .then(blogs => {
+      blogs.forEach(blog => {
+        createBlogElement(blog);
+      });
+    })
+    .catch(error => {
+      console.error('Error fetching blogs:', error);
+    });
+}
+
+// Create a new blog element and append it to the list
+function createBlogElement(blog) {
+  const li = document.createElement('li');
+  li.innerHTML = `
+    <h3>${blog.title}</h3>
+    <p>${blog.body}</p>
+    <button class="deleteBtn" data-id="${blog.id}">Delete</button>
+  `;
+  blogList.appendChild(li);
+}
+
+// Add new blog
+function addBlog(event) {
+  event.preventDefault();
+
+  const title = titleInput.value;
+  const body = bodyInput.value;
+
+  fetch(apiUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ title, body })
+  })
+    .then(response => response.json())
+    .then(blog => {
+      createBlogElement(blog);
+      titleInput.value = '';
+      bodyInput.value = '';
+    })
+    .catch(error => {
+      console.error('Error adding blog:', error);
+    });
+}
+
+// Delete blog
+function deleteBlog(event) {
+  if (event.target.classList.contains('deleteBtn')) {
+    const blogId = event.target.dataset.id;
+
+    fetch(`${apiUrl}/${blogId}`, {
+      method: 'DELETE'
+    })
+      .then(() => {
+        event.target.parentElement.remove();
+      })
+      .catch(error => {
+        console.error('Error deleting blog:', error);
+      });
+  }
+}
+
+// Event listeners
+addBlogForm.addEventListener('submit', addBlog);
+blogList.addEventListener('click', deleteBlog);
+
+// Fetch blogs on page load
+fetchBlogs();
+
+  </script>
+</body>
+</html>
