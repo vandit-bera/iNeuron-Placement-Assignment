@@ -36,7 +36,7 @@
 
 ## All Project Code are in this repository:
 
-[GitHub repo](https://github.com/vandit-bera/iNeuron-Hack-A-Thon)
+[GitHub repo](https://github.com/vandit-bera/iNeuron-Placement-Assignment)
 
 ---
 
